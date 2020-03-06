@@ -1,10 +1,25 @@
 import React from "react";
+import { connect } from "react-redux";
+import { userEditProfileFetch } from "../actions/actions";
+
+const mapStateToProps = state => {
+  // console.log(state.user);
+  return {
+    user: state.user
+  };
+};
+
+const mapDispatchToProps = dispatch => ({
+  userEditProfileFetch: (formData, _id) => {
+    dispatch(userEditProfileFetch(formData, _id));
+  }
+});
 
 class EditProfile extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      profile: "",
+      profile: "profile",
       phoneNumber: "",
       address: "",
       nickname: "",
@@ -17,24 +32,28 @@ class EditProfile extends React.Component {
   }
 
   componentDidMount() {
-    fetch("http://localhost:4000/profile", {
-      method: "GET",
-      credentials: "include"
-    })
-      .then(response => response.json())
-      .then(data => {
-        this.setState({
-          profile: data.profile,
-          phoneNumber: data.phoneNumber,
-          address: data.address,
-          nickname: data.nickname,
-          dateOfBirth: data.dateOfBirth,
-          book: data.book,
-          spouse: data.spouse,
-          _id: data._id
-        });
-      })
-      .catch(error => console.log(error));
+    const {
+      profile,
+      phoneNumber,
+      address,
+      nickname,
+      dateOfBirth,
+      book,
+      spouse,
+      error,
+      _id
+    } = this.props.user;
+    this.setState({
+      profile: profile,
+      phoneNumber: phoneNumber,
+      address: address,
+      nickname: nickname,
+      dateOfBirth: dateOfBirth,
+      book: book,
+      spouse: spouse,
+      error: error,
+      _id: _id
+    });
   }
 
   handleProfileChange = e => {
@@ -103,27 +122,7 @@ class EditProfile extends React.Component {
     formData.append("book", this.state.book);
     formData.append("spouse", this.state.spouse);
 
-    fetch(`http://localhost:4000/profile/edit/${_id}`, {
-      method: "PUT",
-      body: formData,
-      credentials: "include"
-    })
-      .then(response => {
-        if (response.ok) {
-          document
-            .querySelector(".form-wrapper")
-            .classList.remove("requesting");
-          document.querySelector(".form-wrapper").classList.remove("inactive");
-          document.querySelector(".successMessage").classList.add("active");
-        }
-      })
-      .catch(error => {
-        console.log(error);
-        document.querySelector(".errorMessage").classList.add("active");
-        this.setState({
-          error: error.message
-        });
-      });
+    this.props.userEditProfileFetch(formData, _id);
   };
 
   render() {
@@ -256,4 +255,7 @@ class EditProfile extends React.Component {
   }
 }
 
-export default EditProfile;
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(EditProfile);

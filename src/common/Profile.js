@@ -1,8 +1,18 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
+import moment from "moment";
+
+import { userProfileFetch } from "../actions/actions";
+
+const mapDispatchToProps = dispatch => ({
+  userProfileFetch: () => {
+    dispatch(userProfileFetch());
+  }
+});
 
 const mapStateToProps = state => {
+  // console.log(state.user);
   return {
     user: state.user
   };
@@ -14,7 +24,15 @@ class Profile extends React.Component {
     this.state = {};
   }
 
+  componentWillMount() {
+    if (localStorage.token) {
+      this.props.userProfileFetch();
+    }
+  }
   render() {
+    const date = moment(this.props.user.dateOfBirth).format("l");
+
+    // if (!this.props.user.username) return <Redirect to="/" />;
     return (
       <div className="page-wrapper">
         <div className="container feature-top pb-0">
@@ -62,9 +80,7 @@ class Profile extends React.Component {
                 <label htmlFor="date of birth" className="form-label">
                   Date of birth
                 </label>
-                <label className="form-label input">
-                  {this.props.user.dateOfBirth}
-                </label>
+                <label className="form-label input">{date}</label>
               </div>
               <div className="form-group">
                 <label htmlFor="security questions" className="form-label">
@@ -109,5 +125,5 @@ class Profile extends React.Component {
 
 export default connect(
   mapStateToProps,
-  null
+  mapDispatchToProps
 )(Profile);

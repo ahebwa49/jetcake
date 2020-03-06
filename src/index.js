@@ -11,6 +11,7 @@ import SignIn from "./common/SignIn";
 import SignUp from "./common/SignUp";
 import Profile from "./common/Profile";
 import EditProfile from "./common/EditProfile";
+import ProtectedRoute from "./common/ProtectedRoute";
 import Footer from "./common/Footer";
 import MobileMenu from "./common/MobileMenu";
 import * as serviceWorker from "./serviceWorker";
@@ -23,11 +24,6 @@ class Routing extends React.Component {
     };
   }
 
-  // closeMenu = () => {
-  //   this.setState({
-  //     showMobileMenu: false
-  //   });
-  // };
   handleCloseMobileMenu = () => {
     this.setState({
       showMobileMenu: false
@@ -59,8 +55,13 @@ class Routing extends React.Component {
           <Route exact path="/" component={App} />
           <Route path="/signin" component={SignIn} />
           <Route path="/signup" component={SignUp} />
-          <Route exact path="/profile" component={Profile} />
-          <Route path="/profile/edit" component={EditProfile} />
+          <ProtectedRoute exact={true} path="/profile" component={Profile} />
+          <ProtectedRoute
+            exact={true}
+            path="/profile/edit"
+            component={EditProfile}
+          />
+          {/* <Route exact path="/profile" component={Profile} /> */}
         </Switch>
         <Footer />
       </Router>

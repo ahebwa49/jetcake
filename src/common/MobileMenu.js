@@ -2,8 +2,9 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { withRouter } from "react-router-dom";
-import { addUser } from "../actions/addUser";
 import MenuButtonClose from "./MenuButtonClose";
+
+import { logoutUser } from "../actions/actions";
 
 const mapStateToProps = state => {
   return {
@@ -12,8 +13,8 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  addNewUser: user => {
-    dispatch(addUser(user));
+  logoutUser: () => {
+    dispatch(logoutUser());
   }
 });
 
@@ -23,19 +24,14 @@ class MobileMenu extends Component {
     this.handleLogout = this.handleLogout.bind(this);
   }
 
-  handleLogout() {
-    fetch("http://localhost:4000/logout", {
-      method: "GET",
-      credentials: "include"
-    })
-      .then(response => {
-        return response.json();
-      })
-      .then(async data => {
-        await this.props.addNewUser(data);
-        this.props.history.push("/signin");
-      });
+  handleLogout(e) {
+    e.preventDefault();
+    // Remove the token from localStorage
+    localStorage.removeItem("token");
+    // Remove the user object from the Redux store
+    this.props.logoutUser();
   }
+  
   render() {
     return (
       <div className="mobileMenu">
